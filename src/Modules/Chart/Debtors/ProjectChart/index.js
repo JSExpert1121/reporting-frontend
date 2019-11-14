@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Typography, Grid } from '@material-ui/core';
 
 import { scaleLinear, scaleBand, scaleOrdinal } from '@vx/scale';
-import { BarStackHorizontal } from '@vx/shape';
+import { BarStackHorizontal, LinePath } from '@vx/shape';
 import { withTooltip, Tooltip } from "@vx/tooltip";
 import { AxisBottom } from '@vx/axis';
 import { localPoint } from "@vx/event";
@@ -325,7 +325,7 @@ class ProjectChart extends Component {
 
 							return (
 								<Grid container key={i} className={classes.wrapper}>
-									<Grid item md={4} sm={12} xs={12}>
+									<Grid item md={4} sm={12} xs={12} style={{ borderRight: 'solid 1px #DDD' }}>
 										<Grid container>
 											<Grid
 												item md={5}
@@ -367,7 +367,12 @@ class ProjectChart extends Component {
 										<div>
 											<svg width={width} height={yMax}>
 												<rect x={0} y={0} width={width} height={yMax} fill="transparent" onClick={this._deSelectAll} />
-
+												{/* <LinePath
+													data={[{ 'x': 6, 'y': 0 }, { 'x': 6, 'y': yMax }]}
+													x={d => d.x}
+													y={d => d.y}
+													stroke={"#F00"}
+												/> */}
 												<BarStackHorizontal
 													data={d1}
 													keys={keys}
@@ -390,7 +395,7 @@ class ProjectChart extends Component {
 																return (
 																	<rect
 																		key={`barstack-horizontal-${barStack.index}-${bar.index}`}
-																		x={bar.x + 6}
+																		x={bar.x}
 																		y={bar.y}
 																		width={bar.width}
 																		height={16.6}
