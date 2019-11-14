@@ -181,7 +181,7 @@ class DebtorsDays extends Component {
 
 	render() {
 		const {
-			classes,
+			classes, target,
 			summaryData, selectedYears, selectedMonths,
 			tooltipOpen, tooltipData, tooltipTop, tooltipLeft
 		} = this.props;
@@ -196,7 +196,7 @@ class DebtorsDays extends Component {
 			left: 40
 		};
 
-		const { pageYOffset, xMax, yMax } = getParams(window, width, height, margin);
+		const { xMax, yMax } = getParams(window, width, height, margin);
 
 		if (Object.keys(data).length === 0) return null;
 
@@ -246,6 +246,15 @@ class DebtorsDays extends Component {
 							<Group top={margin.top} left={margin.left}>
 								<AxisLeft tickStroke="#d7d7d7" stroke="#d7d7d7" scale={yScale} numTicks={4} hideZero />
 
+								{target && (
+									<LinePath
+										data={[{ 'x': 0, 'y': yScale(target) }, { 'x': xMax, 'y': yScale(target) }]}
+										x={d => d.x}
+										y={d => d.y}
+										stroke={"#555555"}
+										strokeDasharray="2,2"
+									/>
+								)}
 								{Object.keys(data).map(key => {
 									const lineStroke = lineStrokeSet[key];
 

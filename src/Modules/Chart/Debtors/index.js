@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from "@material-ui/core/Grid";
 
 import { creators as DebtorsActions } from '../../../Reducers/Debtors';
+import { creators as KPIActions } from '../../../Reducers/KPI';
 
 import YearSelector from "../../../Common/Selectors/YearSelector";
 import DebtorsDaysChart from "./DebtorsDaysChart";
@@ -39,10 +40,22 @@ class Debtors extends Component {
 		this._isMounted = true;
 		window.addEventListener('resize', this.onResize.bind(this));
 
-		const { defaultYear } = this.props;
-		this.props.updateFilter({ selectedYears: [defaultYear], label: defaultYear.toString() });
-		this.props.getDebtorsSummary([defaultYear]/*selectedYears*/);
-		this.props.getDebtorsDetail([defaultYear]/*selectedYears*/);
+		const {
+			defaultYear,
+			target,
+			getKpiSummary,
+			updateFilter,
+			getDebtorsDetail,
+			getDebtorsSummary
+		} = this.props;
+
+		updateFilter({ selectedYears: [defaultYear], label: defaultYear.toString() });
+		getDebtorsSummary([defaultYear]/*selectedYears*/);
+		getDebtorsDetail([defaultYear]/*selectedYears*/);
+
+		if (!target) {
+			getKpiSummary([defaultYear]);
+		}
 	}
 
 	componentWillUnmount() {
@@ -62,7 +75,7 @@ class Debtors extends Component {
 
 	render() {
 		const {
-			classes, dir,
+			classes, dir, target,
 			summaryData, detailData,
 			selectedYears, label, selectedMonths, selectedDaysRanges, selectedItems, selectedItemStacks
 		} = this.props;
@@ -86,6 +99,7 @@ class Debtors extends Component {
 					defaultStartMonth={this.props.defaultStartMonth}
 					defaultMonth={this.props.defaultMonth}
 					handleFilter={this._handleFilter}
+					target={target}
 				/>
 
 				<div className={classes.container}>
@@ -155,12 +169,14 @@ const mapStateToProps = state => ({
 	selectedDaysRanges: state.debtors.selectedDaysRanges,
 	selectedItems: state.debtors.selectedItems,
 	selectedItemStacks: state.debtors.selectedItemStacks,
+	target: state.KPI.target
 });
 
 const mapDispatchToProps = dispatch => ({
 	getDebtorsSummary: (selectedYears) => dispatch(DebtorsActions.debtorsSummaryRequest(selectedYears)),
 	getDebtorsDetail: (selectedYears) => dispatch(DebtorsActions.debtorsDetailRequest(selectedYears)),
 	updateFilter: (filter) => dispatch(DebtorsActions.debtorsUpdateFilter(filter)),
+	getKpiSummary: (selectedYears) => dispatch(KPIActions.kpiSummaryRequest(selectedYears)),
 });
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Debtors));
