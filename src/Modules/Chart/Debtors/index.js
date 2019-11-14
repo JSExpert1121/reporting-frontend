@@ -21,7 +21,6 @@ class Debtors extends Component {
 	_isMounted = false;
 	constructor(props) {
 		super(props);
-		console.log(props);
 		this.state = {
 			selectedYears: [2019],
 			label: '2019'
@@ -40,7 +39,7 @@ class Debtors extends Component {
 		this._isMounted = true;
 		window.addEventListener('resize', this.onResize.bind(this));
 
-		const { selectedYears, defaultYear, defaultMonth } = this.props;
+		const { defaultYear } = this.props;
 		this.props.updateFilter({ selectedYears: [defaultYear], label: defaultYear.toString() });
 		this.props.getDebtorsSummary([defaultYear]/*selectedYears*/);
 		this.props.getDebtorsDetail([defaultYear]/*selectedYears*/);
@@ -68,6 +67,7 @@ class Debtors extends Component {
 			selectedYears, label, selectedMonths, selectedDaysRanges, selectedItems, selectedItemStacks
 		} = this.props;
 
+		console.log(this.props);
 		return (
 			<div className={classes.root} dir={dir}>
 				<div className="wrapper">

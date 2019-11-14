@@ -275,7 +275,6 @@ class ProjectChart extends Component {
 		const selected = !(selectedItems.projects.length === 0 &&
 			selectedItems.clients.length === 0 &&
 			selectedItems.bars.length === 0);
-		console.log("ChartData: ", selectedItems);
 
 		const height = (window.innerHeight - 100) / 3;
 		const width = window.innerWidth * 2 / 3 - 40;
