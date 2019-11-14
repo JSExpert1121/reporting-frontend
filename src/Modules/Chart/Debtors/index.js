@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from "@material-ui/core/Grid";
 
 import { creators as DebtorsActions } from '../../../Reducers/Debtors';
+import { creators as KPIActions } from '../../../Reducers/KPI';
 
 import YearSelector from "../../../Common/Selectors/YearSelector";
 import DebtorsDaysChart from "./DebtorsDaysChart";
@@ -18,151 +19,164 @@ import { styles } from './style';
 
 class Debtors extends Component {
 
-  _isMounted = false;
-  constructor(props) {
-    super(props);
+	_isMounted = false;
+	constructor(props) {
+		super(props);
+		this.state = {
+			selectedYears: [2019],
+			label: '2019'
+		};
 
-    this.state = {
-      selectedYears: [2019],
-      label: '2019'
-    };
+		this._handleYear = this._handleYear.bind(this);
+		this._handleFilter = this._handleFilter.bind(this);
+	}
 
-    this._handleYear = this._handleYear.bind(this);
-    this._handleFilter = this._handleFilter.bind(this);
-  }
+	onResize() {
+		if (this._isMounted === true)
+			this.setState({ resize: !this.state.resize });
+	}
 
-  onResize() {
-    if(this._isMounted === true)
-      this.setState({resize: !this.state.resize});
-  }
+	componentDidMount() {
+		this._isMounted = true;
+		window.addEventListener('resize', this.onResize.bind(this));
 
-  componentDidMount() {
-    this._isMounted = true;
-    window.addEventListener('resize', this.onResize.bind(this));
+		const {
+			defaultYear,
+			target,
+			getKpiSummary,
+			updateFilter,
+			getDebtorsDetail,
+			getDebtorsSummary
+		} = this.props;
 
-    const { selectedYears , defaultYear , defaultMonth} = this.props;
-    this.props.updateFilter({selectedYears:[defaultYear] , label:defaultYear.toString() });
-    this.props.getDebtorsSummary([defaultYear]/*selectedYears*/);
-    this.props.getDebtorsDetail([defaultYear]/*selectedYears*/);
-  }
+		updateFilter({ selectedYears: [defaultYear], label: defaultYear.toString() });
+		getDebtorsSummary([defaultYear]/*selectedYears*/);
+		getDebtorsDetail([defaultYear]/*selectedYears*/);
 
-  componentWillUnmount() {
-    this._isMounted = false;
-    window.removeEventListener('resize', this.onResize.bind(this));
-  }
+		if (!target) {
+			getKpiSummary([defaultYear]);
+		}
+	}
 
-  _handleYear = (event) => {
-    this.props.getDebtorsSummary(event.selectedYears);
-    this.props.getDebtorsDetail(event.selectedYears);
-    this._handleFilter(event);
-  };
+	componentWillUnmount() {
+		this._isMounted = false;
+		window.removeEventListener('resize', this.onResize.bind(this));
+	}
 
-  _handleFilter = (event) => {
-    this.props.updateFilter(event);
-  };
+	_handleYear = (event) => {
+		this.props.getDebtorsSummary(event.selectedYears);
+		this.props.getDebtorsDetail(event.selectedYears);
+		this._handleFilter(event);
+	};
 
-  render() {
-    const {
-      classes, dir,
-      summaryData, detailData,
-      selectedYears, label, selectedMonths, selectedDaysRanges, selectedItems, selectedItemStacks
-    } = this.props;
+	_handleFilter = (event) => {
+		this.props.updateFilter(event);
+	};
 
-    return (
-      <div className={classes.root} dir={dir}>
-        <div className="wrapper">
-          <YearSelector
-            selectedYears={selectedYears}
-            label={label}
-            onChange={this._handleYear}
-          />
-          <div className="right well"></div>
-        </div>
+	render() {
+		const {
+			classes, dir, target,
+			summaryData, detailData,
+			selectedYears, label, selectedMonths, selectedDaysRanges, selectedItems, selectedItemStacks
+		} = this.props;
 
-        <DebtorsDaysChart
-          summaryData={summaryData}
-          selectedYears={selectedYears}
-          selectedMonths={selectedMonths}
-          defaultStartMonth={this.props.defaultStartMonth}
-          defaultMonth={this.props.defaultMonth}
-          handleFilter={this._handleFilter}
-        />
+		console.log(this.props);
+		return (
+			<div className={classes.root} dir={dir}>
+				<div className="wrapper">
+					<YearSelector
+						selectedYears={selectedYears}
+						label={label}
+						onChange={this._handleYear}
+					/>
+					<div className="right well"></div>
+				</div>
 
-        <div className={classes.container}>
-          <div className={classes.fake}></div>
-          <Grid container>
-            <Grid item md={6} sm={6} xs={6} className={`${classes.item} well`}>
-              <AgeingChart
-                detailData={detailData}
-                selectedYears={selectedYears}
-                selectedDaysRanges={selectedDaysRanges}
-                handleFilter={this._handleFilter}
-              />
-            </Grid>
-            <Grid item md={6} sm={6} xs={6} className={`${classes.item} well`}>
-              <ItemsChart
-                detailData={detailData}
-                selectedYears={selectedYears}
-                selectedDaysRanges={selectedDaysRanges}
-                selectedItemStacks={selectedItemStacks}
-                selectedItems={selectedItems}
-                handleFilter={this._handleFilter}
-              />
-            </Grid>
-          </Grid>
-        </div>
+				<DebtorsDaysChart
+					summaryData={summaryData}
+					selectedYears={selectedYears}
+					selectedMonths={selectedMonths}
+					defaultStartMonth={this.props.defaultStartMonth}
+					defaultMonth={this.props.defaultMonth}
+					handleFilter={this._handleFilter}
+					target={target}
+				/>
 
-        <ProjectChart
-          detailData={detailData}
-          selectedYears={selectedYears}
-          selectedDaysRanges={selectedDaysRanges}
-          selectedItems={selectedItems}
-          selectedItemStacks={selectedItemStacks}
-          handleFilter={this._handleFilter}
-        />
-      </div>
-    );
-  }
+				<div className={classes.container}>
+					<div className={classes.fake}></div>
+					<Grid container>
+						<Grid item md={6} sm={6} xs={6} className={`${classes.item} well`}>
+							<AgeingChart
+								detailData={detailData}
+								selectedYears={selectedYears}
+								selectedDaysRanges={selectedDaysRanges}
+								handleFilter={this._handleFilter}
+							/>
+						</Grid>
+						<Grid item md={6} sm={6} xs={6} className={`${classes.item} well`}>
+							<ItemsChart
+								detailData={detailData}
+								selectedYears={selectedYears}
+								selectedDaysRanges={selectedDaysRanges}
+								selectedItemStacks={selectedItemStacks}
+								selectedItems={selectedItems}
+								handleFilter={this._handleFilter}
+							/>
+						</Grid>
+					</Grid>
+				</div>
+
+				<ProjectChart
+					detailData={detailData}
+					selectedYears={selectedYears}
+					selectedDaysRanges={selectedDaysRanges}
+					selectedItems={selectedItems}
+					selectedItemStacks={selectedItemStacks}
+					handleFilter={this._handleFilter}
+				/>
+			</div>
+		);
+	}
 
 }
 
 
 Debtors.propTypes = {
-  classes: PropTypes.object.isRequired,
-  dir: PropTypes.string.isRequired,
+	classes: PropTypes.object.isRequired,
+	dir: PropTypes.string.isRequired,
 
-  summaryData: PropTypes.array.isRequired,
-  detailData: PropTypes.array.isRequired,
+	summaryData: PropTypes.array.isRequired,
+	detailData: PropTypes.array.isRequired,
 
-  selectedYears: PropTypes.array.isRequired,
-  label: PropTypes.string.isRequired,
-  selectedMonths: PropTypes.array.isRequired,
-  selectedDaysRanges: PropTypes.array.isRequired,
-  selectedItemStacks: PropTypes.array.isRequired,
-  selectedItems: PropTypes.array.isRequired,
-  defaultYear: PropTypes.number.isRequired,
-  defaultMonth: PropTypes.number.isRequired,
-  defaultDimDate: PropTypes.string.isRequired,
+	selectedYears: PropTypes.array.isRequired,
+	label: PropTypes.string.isRequired,
+	selectedMonths: PropTypes.array.isRequired,
+	selectedDaysRanges: PropTypes.array.isRequired,
+	selectedItemStacks: PropTypes.array.isRequired,
+	selectedItems: PropTypes.array.isRequired,
+	defaultYear: PropTypes.number.isRequired,
+	defaultMonth: PropTypes.number.isRequired,
+	defaultDimDate: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = state => ({
-  summaryData: state.debtors.summaryData,
-  detailData: state.debtors.detailData,
+	summaryData: state.debtors.summaryData,
+	detailData: state.debtors.detailData,
 
-  selectedYears: state.debtors.selectedYears,
-  label: state.debtors.label,
-  selectedMonths: state.debtors.selectedMonths,
-  selectedDaysRanges: state.debtors.selectedDaysRanges,
-  selectedItems: state.debtors.selectedItems,
-  selectedItemStacks: state.debtors.selectedItemStacks,
+	selectedYears: state.debtors.selectedYears,
+	label: state.debtors.label,
+	selectedMonths: state.debtors.selectedMonths,
+	selectedDaysRanges: state.debtors.selectedDaysRanges,
+	selectedItems: state.debtors.selectedItems,
+	selectedItemStacks: state.debtors.selectedItemStacks,
+	target: state.KPI.target
 });
 
-const mapDispatchToProps = dispatch => {
-  return {
-    getDebtorsSummary: (selectedYears) => dispatch(DebtorsActions.debtorsSummaryRequest(selectedYears)),
-    getDebtorsDetail: (selectedYears) => dispatch(DebtorsActions.debtorsDetailRequest(selectedYears)),
-    updateFilter: (filter) => dispatch(DebtorsActions.debtorsUpdateFilter(filter)),
-  }
-};
+const mapDispatchToProps = dispatch => ({
+	getDebtorsSummary: (selectedYears) => dispatch(DebtorsActions.debtorsSummaryRequest(selectedYears)),
+	getDebtorsDetail: (selectedYears) => dispatch(DebtorsActions.debtorsDetailRequest(selectedYears)),
+	updateFilter: (filter) => dispatch(DebtorsActions.debtorsUpdateFilter(filter)),
+	getKpiSummary: (selectedYears) => dispatch(KPIActions.kpiSummaryRequest(selectedYears)),
+});
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Debtors));

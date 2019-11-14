@@ -6,27 +6,23 @@ import PublicLayout from './Public';
 
 
 class Layout extends Component {
-  static displayName = 'Layout';
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-  };
+	static displayName = 'Layout';
+	static propTypes = {
+		children: PropTypes.node.isRequired,
+	};
 
-  constructor(props) {
-    super(props);
-  }
+	componentDidMount() {
 
-  componentDidMount() {
+	}
 
-  }
+	componentWillUnmount() {
 
-  componentWillUnmount() {
+	}
 
-  }
-
-  render() {
-    const { children, ...props } = this.props;
-    return <PublicLayout {...props}>{children}</PublicLayout>
-  }
+	render() {
+		const { children, ...props } = this.props;
+		return <PublicLayout {...props}>{children}</PublicLayout>
+	}
 }
 
 export default withRouter(Layout);

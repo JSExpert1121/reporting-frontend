@@ -11,17 +11,17 @@ import './Assets/css/app.css';
 import * as serviceWorker from './serviceWorker';
 
 const theme = createMuiTheme({
-  palette: {},
-  typography: { useNextVariants: true },
+	palette: {},
+	typography: { useNextVariants: true },
 });
 
 ReactDOM.render(
-  (<MuiThemeProvider theme={theme} >
-      <Provider store={store}>
-          <Routes/>
-      </Provider>
-  </MuiThemeProvider>),
-  document.getElementById('root')
+	(<MuiThemeProvider theme={theme} >
+		<Provider store={store}>
+			<Routes />
+		</Provider>
+	</MuiThemeProvider>),
+	document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change
